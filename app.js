@@ -307,7 +307,7 @@ app.post("/student/update-profile", (req, res) => {
     nk_full_name = ?,
     nk_relationship = ?,
     nk_phone_number = ?,
-    nk_email= ?, 
+    nk_email= ?
     WHERE regnumber = ?`;
 
     // Execute the update query
