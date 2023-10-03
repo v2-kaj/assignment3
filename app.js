@@ -119,7 +119,14 @@ app.get("/", (req, res) => {
 });
 
 app.get("/students", (req, res) => {
-    connection.query("SELECT * FROM students", (error, students) => {
+    connection.query(`SELECT s.*, p.*
+    FROM students s
+    NATURAL JOIN programs p;
+    `, (error, students) => {
+
+
+
+
         const query = `SELECT p.abbreviation, 
 COUNT(s.regnumber) AS number_of_students 
 FROM students s INNER JOIN programs p ON
@@ -139,7 +146,7 @@ FROM students s INNER JOIN programs p ON
 
             // Object destructuring
             const { programs, total } = studentsData
-        
+
 
             if (results.length > 0) {
 
@@ -152,13 +159,13 @@ FROM students s INNER JOIN programs p ON
                 };
                 res.render("students", data);
             }
-            else{
+            else {
                 const data = {
                     title: "Students",
                     active: "Students",
                     students: students,
-                    programs:[],
-                    total:[]
+                    programs: [],
+                    total: []
                 }
                 res.render("students", data);
             }
@@ -311,7 +318,7 @@ app.get("/student", (req, res) => {
 });
 
 app.get("/student/update-profile", (req, res) => {
-    const regnumber = "ME/23/SS/001"
+    const regnumber = "MIS/23/SS/001"
     connection.query("SELECT s.*, p.* FROM students s INNER JOIN programs p ON p.program_id = s.program_id  WHERE regnumber =?", regnumber, (err, results) => {
         console.log(results)
         if (results.length > 0) {
@@ -331,7 +338,7 @@ app.get("/student/update-profile", (req, res) => {
 });
 
 app.post("/student/update-profile", (req, res) => {
-    const regnumber = "ME/23/SS/001"
+    const regnumber = "MIS/23/SS/001"
 
     const gender = req.body.gender
     const nk_full_name = req.body.nk_full_name
@@ -477,7 +484,7 @@ app.post('/lecturers/add-assessment', (req, res) => {
     );
 });
 app.get('/student/results', (req, res) => {
-    const regnumber = "IS/23/SS/001"
+    const regnumber = "MIS/23/SS/001"
     connection.query("SELECT * FROM grades WHERE regnumber = ? ", [regnumber], (error, results) => {
         console.log(results)
         const data = {

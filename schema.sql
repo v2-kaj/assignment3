@@ -157,14 +157,28 @@ CREATE TABLE grades (
 
 INSERT INTO `grades` ( `regnumber`, `module_code`, `semester`, `marks`)
 VALUES
-    ('IS/23/SS/002', 'CSIP111', 1, 80), 
-    ('IS/23/SS/002','CSDM111', 1, 96),
-    ('IS/23/SS/002','CSDS111', 1, 70),
-    ('IS/23/SS/002','CSWD111', 1, 96),
-    ('IS/23/SS/002','COFA121', 2, 81),
-    ('IS/23/SS/002','COCA121', 2, 98),
-    ('IS/23/SS/002','CSOP121', 2, 81),
-    ('IS/23/SS/002','CSSP121', 2, 78);
+    ('MIS/23/SS/001', 'CSIP111', 1, 80), 
+    ('MIS/23/SS/001','CSDM111', 1, 96),
+    ('MIS/23/SS/001','CSDS111', 1, 70),
+    ('MIS/23/SS/001','CSWD111', 1, 96),
+    ('MIS/23/SS/001','COFA121', 2, 81),
+    ('MIS/23/SS/001','COCA121', 2, 98),
+    ('MIS/23/SS/001','CSOP121', 2, 81),
+    ('MIS/23/SS/001','CSSP121', 2, 78),
+    -- another student
+    ('MIS/23/SS/002', 'CSIP111', 1, 23), 
+    ('MIS/23/SS/002','CSDM111', 1, 45),
+    ('MIS/23/SS/002','CSDS111', 1, 50),
+    ('MIS/23/SS/002','CSWD111', 1, 34),
+    ('MIS/23/SS/002','COFA121', 2, 80),
+    ('MIS/23/SS/002','COCA121', 2, 76),
+    ('MIS/23/SS/002','CSOP121', 2, 99),
+    ('MIS/23/SS/002','CSSP121', 2, 43);
+
+
+
+
+
 
 INSERT INTO `grades` ( `regnumber`, `module_code`, `semester`, `marks`)
 VALUES
