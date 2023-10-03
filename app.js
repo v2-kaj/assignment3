@@ -274,12 +274,55 @@ app.get("/student", (req, res) => {
 });
 
 app.get("/student/update-profile", (req, res) => {
-    const data = {
-        title: "Student",
-        active: "Student"
-    };
-    res.render("updateProfile", data);
+    const regnumber = "IS/23/SS/001"
+    connection.query("SELECT s.*, p.* FROM students s INNER JOIN programs p ON p.program_id = s.program_id  WHERE regnumber =?", regnumber, (err, results) => {
+        console.log(results)
+        if (results.length > 0) {
+           
+            const data = {
+                title: "Student",
+                active: "Student",
+                profile: results[0],
+
+            };
+            res.render("updateProfile", data);
+        }
+        else {
+            res.send("Student doesnt exist")
+        }
+    })
 });
+
+app.post("/student/update-profile", (req, res) => {
+    const regnumber = "IS/23/SS/001"
+
+    const gender = req.body.gender
+    const nk_full_name = req.body.nk_full_name
+    const nk_relationship = req.body.nk_relationship
+    const nk_phone_number = req.body.nk_phone_number
+    const nk_email = req.body.nk_email
+
+    const updateQuery = `UPDATE students SET 
+    gender = ?, 
+    nk_full_name = ?,
+    nk_relationship = ?,
+    nk_phone_number = ?,
+    nk_email= ?, 
+    WHERE regnumber = ?`;
+
+    // Execute the update query
+    connection.query(updateQuery, [gender, nk_full_name, nk_relationship, nk_phone_number, nk_email, regnumber], (err, result) => {
+        if (err) throw err;
+
+        // Check if any rows were affected
+        if (result.affectedRows > 0) {
+            res.render("feedback", { title: "Students", active: "Students", message: 'Student information updated successfully' });
+        } else {
+            res.send('No matching student found for the provided regnumber');
+        }
+    })
+
+})
 
 
 // add module to a lecture
@@ -351,7 +394,7 @@ app.get('/lecturers/:lecturerId/modules', (req, res) => {
 // Route to render the form for adding an assessment
 app.get('/lecturers/add-assessment', (req, res) => {
     // Replace this with the actual lecturer's ID from the session
-    const lecturerId = 16;
+    const lecturerId = 18;
     const query = `
     SELECT lm.*, m.code
     FROM lecturer_module lm 
@@ -360,13 +403,13 @@ app.get('/lecturers/add-assessment', (req, res) => {
     WHERE lm.lecturer_id = ?;`;
 
     connection.query(query, [lecturerId], (error, results) => {
-        
+
         const data = {
             title: "Add Assessment",
             active: "Assessments",
             lecturerId: lecturerId,
             modules: results,
-            
+
 
         }
         res.render('addAssessment', data);
@@ -396,7 +439,20 @@ app.post('/lecturers/add-assessment', (req, res) => {
         }
     );
 });
+app.get('/student/results', (req, res) => {
+    const regnumber = "IS/23/SS/001"
+    connection.query("SELECT * FROM grades WHERE regnumber = ? ", [regnumber], (error, results) => {
+        console.log(results)
+        const data = {
+            title: "Results",
+            active: "Results",
+            grades: results,
+        }
 
+    })
+
+
+})
 
 app.listen(port, () => {
     console.log(`server started at port ${port}`);

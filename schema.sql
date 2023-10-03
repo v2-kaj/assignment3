@@ -137,6 +137,20 @@ CREATE TABLE `assessments` (
 );
 
 
+CREATE TABLE grades (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    regnumber VARCHAR(32) NOT NULL,
+    assessment_id INT NOT NULL,
+    marks DECIMAL(5, 2) NOT NULL,
+    FOREIGN KEY (regnumber) REFERENCES students(regnumber),
+    FOREIGN KEY (assessment_id) REFERENCES assessments(assessment_id)
+);
+
+INSERT INTO `grades` ( `regnumber`, `assessment_id`, `marks`)
+VALUES
+    ('IS/23/SS/001', 1, 80), 
+    ('IS/23/SS/001', 2, 80);
+
 
      
 =====================================
