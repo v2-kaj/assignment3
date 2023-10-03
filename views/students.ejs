@@ -1,45 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('./partials/head') %>
-<body>
-    <div class="container">
-      <%-include("partials/nav")%>
-      <main>
-        <%-include("partials/searchBar")%>
-        
-        <h1><%= title %></h1>
-          <div class="content"> </div>
-            <table>
-              <tr>
-                <th>Regnumber</th>
-                <th>Firstname</th>
-                <th>Lastname</th>
-                <th>Program</th>
-              </tr>
-              
-              <% students.forEach(function(student) { %>
-                <tr>
-                  <td><%= student.regnumber %></td> 
-                  <td><%= student.firstname %></td>
-                  <td><%= student.lastname %></td>
-                  <td><%= student.program_id %></td>
-                </tr>
-              <% }); %>
-            </table>
 
-          <div>
-            links
-            <a href="/students/add-student">Add a new student</a>
-          </div>
-          
-          
-        
-        
-      </main>
-        
+  <body>
+    <div class="container">
+      <%- include("partials/nav")%>
+        <main>
+          <%- include("partials/searchBar")%>
+
+            <h1>
+              <%= title %>
+            </h1>
+            <div>
+              <a href="/students/add-student">Add a new student</a>
+            </div>
+            <div class="content">
+              <% if (students.length> 0) { %>
+                <div>
+                <table>
+                  <tr>
+                    <th>Regnumber</th>
+                    <th>Firstname</th>
+                    <th>Lastname</th>
+                    <th>Program</th>
+                  </tr>
+
+                  <% students.forEach(function(student) { %>
+                    <tr>
+                      <td>
+                        <%= student.regnumber %>
+                      </td>
+                      <td>
+                        <%= student.firstname %>
+                      </td>
+                      <td>
+                        <%= student.lastname %>
+                      </td>
+                      <td>
+                        <%= student.program_id %>
+                      </td>
+                    </tr>
+                    <% }); %>
+                </table>
+              </div>
+
+
+                <div>
+                  <div class="chart">
+                    <canvas id="studentsDataChart" style="width:100%;max-width:400px"></canvas>
+                    <script>
+
+                      var programs = <%- JSON.stringify(programs) %>;
+                      var total = <%- JSON.stringify(total) %>;
   
+                      new Chart("studentsDataChart", {
+                        type: "bar",
+                        data: {
+                          labels: programs,
+                          datasets: [{
+                            backgroundColor: [
+                              "red",
+                              "green",
+                              "blue",
+                            ],
+                            data: total
+                          }]
+                        },
+                        options: {
+                          responsive: true,
+                          maintainAspectRatio: false,
+                          legend: { display: false },
+                          title: {
+                            display: true,
+                            text: "Number of students per program"
+                          },
+                          scales: {
+                            yAxes: [{
+                              ticks: {
+                                stepSize: 1,
+                                beginAtZero: true
+                              },
+                              scaleLabel: {
+                                display: true,
+                                labelString: "Number of Students"
+                              }
+                            }],
+                            xAxes: [{
+                              scaleLabel: {
+                                display: true,
+                                labelString: "Program Abbreviation"
+                              }
+                            }]
+                          }
+                        }
+                      })
+  
+  
+                    </script>
+                  </div>
+                  
+                  <% } else { %>
+                    <p>No student registered so far.</p>
+                    <% } %>
+
+                </div>
+            </div>
+
+
+        </main>
+
+
     </div>
-  
+
   </body>
-  
-  </html>
+
+</html>

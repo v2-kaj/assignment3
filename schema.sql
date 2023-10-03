@@ -105,11 +105,15 @@ INSERT INTO `modules` (`title`, `code`, `semester`, `department_id`, `level`) VA
   ('Engineering Drawing', 'ENED111', 1, 2, 1),
   ('Calculus', 'ENCA111', 1, 2, 1),
   ('Chemistry', 'ENCH111', 1, 2, 1),
-  ('Engineering Materials', 'ENEM302', 1, 2, 1),
   ('Business Law', 'COBL111', 1, 3, 1),
   ('Cost Accounting', 'COCA111', 1, 3, 1),
   ('Financial Accounting', 'COFA111', 1, 3, 1),
   ('Organisational Behaviour', 'COOB111', 1, 3, 1);
+INSERT INTO `modules` (`title`, `code`, `semester`, `department_id`, `level`) VALUES
+('Financial Accounting', 'COFA121', 2, 1, 1),
+('Cost Accounting', 'COCA121', 2, 1, 1),
+('Script', 'CSSP121', 2, 1, 1),
+('Operating Systems', 'CSOP121', 2, 1, 1);
 
 CREATE TABLE `lecturer_module` (
     `id` int NOT NULL AUTO_INCREMENT,
@@ -140,16 +144,53 @@ CREATE TABLE `assessments` (
 CREATE TABLE grades (
     id INT AUTO_INCREMENT PRIMARY KEY,
     regnumber VARCHAR(32) NOT NULL,
-    assessment_id INT NOT NULL,
+    module_code VARCHAR(32) NOT NULL,
+    semester INT NOT NULL,
     marks DECIMAL(5, 2) NOT NULL,
-    FOREIGN KEY (regnumber) REFERENCES students(regnumber),
-    FOREIGN KEY (assessment_id) REFERENCES assessments(assessment_id)
+    FOREIGN KEY (regnumber) REFERENCES students(regnumber)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    FOREIGN KEY (module_code) REFERENCES modules(code)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 );
 
-INSERT INTO `grades` ( `regnumber`, `assessment_id`, `marks`)
+INSERT INTO `grades` ( `regnumber`, `module_code`, `semester`, `marks`)
 VALUES
-    ('IS/23/SS/001', 1, 80), 
-    ('IS/23/SS/001', 2, 80);
+    ('IS/23/SS/002', 'CSIP111', 1, 80), 
+    ('IS/23/SS/002','CSDM111', 1, 96),
+    ('IS/23/SS/002','CSDS111', 1, 70),
+    ('IS/23/SS/002','CSWD111', 1, 96),
+    ('IS/23/SS/002','COFA121', 2, 81),
+    ('IS/23/SS/002','COCA121', 2, 98),
+    ('IS/23/SS/002','CSOP121', 2, 81),
+    ('IS/23/SS/002','CSSP121', 2, 78);
+
+INSERT INTO `grades` ( `regnumber`, `module_code`, `semester`, `marks`)
+VALUES
+    ('IS/23/SS/003', 'CSIP111', 1, 76), 
+    ('IS/23/SS/003','CSDM111', 1, 65),
+    ('IS/23/SS/003','CSDS111', 1, 89),
+    ('IS/23/SS/003','CSWD111', 1, 55),
+    ('IS/23/SS/003','COFA121', 2, 59),
+    ('IS/23/SS/003','COCA121', 2, 70),
+    ('IS/23/SS/003','CSOP121', 2, 66),
+    ('IS/23/SS/003','CSSP121', 2, 90);
+
+INSERT INTO `grades` ( `regnumber`, `module_code`, `semester`, `marks`)
+VALUES
+    ('IS/23/SS/004', 'CSIP111', 1, 40), 
+    ('IS/23/SS/004','CSDM111', 1, 39),
+    ('IS/23/SS/004','CSDS111', 1, 49),
+    ('IS/23/SS/004','CSWD111', 1, 23),
+    ('IS/23/SS/004','COFA121', 2, 67),
+    ('IS/23/SS/004','COCA121', 2, 32),
+    ('IS/23/SS/004','CSOP121', 2, 66),
+    ('IS/23/SS/004','CSSP121', 2, 64);
+
+SELECT p.abbreviation, COUNT(s.regnumber) AS number_of_students FROM students s INNER JOIN programs p ON s.program_id = p.program_id GROUP BY s.program_id;
+
+
 
 
      

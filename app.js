@@ -120,12 +120,49 @@ app.get("/", (req, res) => {
 
 app.get("/students", (req, res) => {
     connection.query("SELECT * FROM students", (error, students) => {
-        const data = {
-            title: "Students",
-            active: "Students",
-            students: students,
-        };
-        res.render("students", data);
+        const query = `SELECT p.abbreviation, 
+COUNT(s.regnumber) AS number_of_students 
+FROM students s INNER JOIN programs p ON
+ s.program_id = p.program_id GROUP BY s.program_id`;
+
+        connection.query(query, (error, results) => {
+
+            const studentsData = {
+                programs: [],
+                total: []
+            };
+
+            results.forEach(item => {
+                studentsData.programs.push(item.abbreviation);
+                studentsData.total.push(item.number_of_students);
+            });
+
+            // Object destructuring
+            const { programs, total } = studentsData
+        
+
+            if (results.length > 0) {
+
+                const data = {
+                    title: "Students",
+                    active: "Students",
+                    students: students,
+                    programs: programs,
+                    total: total,
+                };
+                res.render("students", data);
+            }
+            else{
+                const data = {
+                    title: "Students",
+                    active: "Students",
+                    students: students,
+                    programs:[],
+                    total:[]
+                }
+                res.render("students", data);
+            }
+        })
     });
 })
 
@@ -274,11 +311,11 @@ app.get("/student", (req, res) => {
 });
 
 app.get("/student/update-profile", (req, res) => {
-    const regnumber = "IS/23/SS/001"
+    const regnumber = "ME/23/SS/001"
     connection.query("SELECT s.*, p.* FROM students s INNER JOIN programs p ON p.program_id = s.program_id  WHERE regnumber =?", regnumber, (err, results) => {
         console.log(results)
         if (results.length > 0) {
-           
+
             const data = {
                 title: "Student",
                 active: "Student",
@@ -294,7 +331,7 @@ app.get("/student/update-profile", (req, res) => {
 });
 
 app.post("/student/update-profile", (req, res) => {
-    const regnumber = "IS/23/SS/001"
+    const regnumber = "ME/23/SS/001"
 
     const gender = req.body.gender
     const nk_full_name = req.body.nk_full_name
@@ -447,6 +484,46 @@ app.get('/student/results', (req, res) => {
             title: "Results",
             active: "Results",
             grades: results,
+        }
+
+    })
+
+
+})
+
+app.get('/performance', (req, res) => {
+    const query = `SELECT p.abbreviation, 
+COUNT(s.regnumber) AS number_of_students 
+FROM students s INNER JOIN programs p ON
+ s.program_id = p.program_id GROUP BY s.program_id`;
+
+    connection.query(query, (error, results) => {
+
+        const studentsData = {
+            programs: [],
+            total: []
+        };
+
+        results.forEach(item => {
+            studentsData.programs.push(item.abbreviation);
+            studentsData.total.push(item.number_of_students);
+        });
+
+        // Object destructuring
+        const { programs, total } = studentsData
+        console.log(programs)
+        console.log(total)
+
+
+
+        if (results.length > 0) {
+            const data = {
+                title: "Performance",
+                active: "Performance",
+                programs: programs,
+                total: total,
+            }
+            res.render("performance", data)
         }
 
     })
