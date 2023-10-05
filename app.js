@@ -1,7 +1,7 @@
 const express = require("express");
 const mysql = require('mysql2');
 const nodemailer = require('nodemailer');
-const {keys} = require('./secret/keys')
+const {keys} = require('./secrets/keys')
 
 // Set up the session middleware
 const session = require('express-session');
