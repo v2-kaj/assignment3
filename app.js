@@ -1,11 +1,10 @@
 const express = require("express");
 const mysql = require('mysql2');
 const nodemailer = require('nodemailer');
+const {keys} = require('./secret/keys')
 
 // Set up the session middleware
 const session = require('express-session');
-
-
 
 
 const connection = mysql.createPool({
@@ -679,21 +678,21 @@ app.post('/send-results/:regnumber/:email', (req, res) => {
     const message =[]
     if (results != undefined){
     results.map((res) => {
-            message.push(`<p>${res.title} ${res.marks}  ${parseInt(res.module_code)<50? "Fail": "Pass"}\n</p>`)       
+            message.push(`<p style="color:red">${res.title} ${res.marks}  ${parseInt(res.module_code)<50? "Fail": "Pass"}\n</p>`)       
       });
       const msg = message.join(' ')
       const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: 'madalitsomuva@gmail.com',
-            pass: 'fouf qpoh mzdm zypn'
+            user: keys.originUser,
+            pass: keys.originPassword
         }
     });
     
     const mailOptions = {
-        from: 'madalitsomuva@gmail.com',
+        from: keys.originUser,
         to: 'bit21-mmuva@poly.ac.mw',
-        subject: 'Sending Email using Node.js',
+        subject: 'Results',
         html: msg
     };
     
