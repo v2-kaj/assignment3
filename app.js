@@ -1,7 +1,10 @@
 const express = require("express");
 const mysql = require('mysql2');
+const nodemailer = require('nodemailer');
+
 // Set up the session middleware
 const session = require('express-session');
+
 
 
 
@@ -127,8 +130,8 @@ app.get("/students", (req, res) => {
 
 
 
-        const query = `SELECT p.abbreviation, 
-COUNT(s.regnumber) AS number_of_students 
+        const query = `SELECT p.abbreviation,
+COUNT(s.regnumber) AS number_of_students
 FROM students s INNER JOIN programs p ON
  s.program_id = p.program_id GROUP BY s.program_id`;
 
@@ -318,7 +321,7 @@ app.get("/student", (req, res) => {
 });
 
 app.get("/student/update-profile", (req, res) => {
-    const regnumber = "MIS/23/SS/001"
+    const regnumber = "BME/23/SS/001"
     connection.query("SELECT s.*, p.* FROM students s INNER JOIN programs p ON p.program_id = s.program_id  WHERE regnumber =?", regnumber, (err, results) => {
         console.log(results)
         if (results.length > 0) {
@@ -338,7 +341,7 @@ app.get("/student/update-profile", (req, res) => {
 });
 
 app.post("/student/update-profile", (req, res) => {
-    const regnumber = "MIS/23/SS/001"
+    const regnumber = "BME/23/SS/001"
 
     const gender = req.body.gender
     const nk_full_name = req.body.nk_full_name
@@ -346,8 +349,8 @@ app.post("/student/update-profile", (req, res) => {
     const nk_phone_number = req.body.nk_phone_number
     const nk_email = req.body.nk_email
 
-    const updateQuery = `UPDATE students SET 
-    gender = ?, 
+    const updateQuery = `UPDATE students SET
+    gender = ?,
     nk_full_name = ?,
     nk_relationship = ?,
     nk_phone_number = ?,
@@ -441,9 +444,9 @@ app.get('/lecturers/add-assessment', (req, res) => {
     const lecturerId = 18;
     const query = `
     SELECT lm.*, m.code
-    FROM lecturer_module lm 
-    INNER JOIN modules m 
-    ON lm.module_code = m.code 
+    FROM lecturer_module lm
+    INNER JOIN modules m
+    ON lm.module_code = m.code
     WHERE lm.lecturer_id = ?;`;
 
     connection.query(query, [lecturerId], (error, results) => {
@@ -499,27 +502,28 @@ app.get('/student/results', (req, res) => {
 })
 
 app.get('/performance', (req, res) => {
-    const query = `SELECT p.abbreviation, 
-COUNT(s.regnumber) AS number_of_students 
-FROM students s INNER JOIN programs p ON
- s.program_id = p.program_id GROUP BY s.program_id`;
+    const query = `SELECT p.abbreviation, AVG(g.marks) AS average_grade
+    FROM programs p
+    INNER JOIN students s ON p.program_id = s.program_id
+    INNER JOIN grades g ON s.regnumber = g.regnumber
+    GROUP BY p.name;`;
 
     connection.query(query, (error, results) => {
+        console.log(results)
 
-        const studentsData = {
+        const performanceData = {
             programs: [],
-            total: []
+            avg: []
         };
 
         results.forEach(item => {
-            studentsData.programs.push(item.abbreviation);
-            studentsData.total.push(item.number_of_students);
+            performanceData.programs.push(item.abbreviation);
+            performanceData.avg.push(item.average_grade);
         });
 
         // Object destructuring
-        const { programs, total } = studentsData
-        console.log(programs)
-        console.log(total)
+        const { programs, avg } = performanceData
+
 
 
 
@@ -528,7 +532,7 @@ FROM students s INNER JOIN programs p ON
                 title: "Performance",
                 active: "Performance",
                 programs: programs,
-                total: total,
+                avg: avg,
             }
             res.render("performance", data)
         }
@@ -537,6 +541,182 @@ FROM students s INNER JOIN programs p ON
 
 
 })
+
+
+// reprts to students
+
+
+app.get('/reports', (req, res) => {
+    const query = `
+    SELECT
+        s.firstname,
+        g.regnumber,
+        g.module_code,
+        g.semester,
+        m.title,
+        g.marks
+    FROM
+        students s
+    JOIN
+        grades g ON s.regnumber = g.regnumber
+    JOIN 
+        modules m ON m.code = g.module_code
+    ORDER BY
+    s.firstname,
+    g.semester
+    
+    ;`;
+
+    connection.query(query, (error, results) => {
+        const data = results
+        console.log(data)
+        console.log("EXTRA")
+        const mappedData = {};
+
+        // Loop through the data and organize it by 'regnumber'
+        data.forEach((item) => {
+            const regnumber = item.regnumber;
+
+            if (!mappedData[regnumber]) {
+                // Initialize an array for each 'regnumber'
+                mappedData[regnumber] = {
+                    firstname: item.firstname,
+                    regnumber: regnumber,
+                    modules: [],
+                };
+            }
+
+            // Add the module details to the 'modules' array
+            mappedData[regnumber].modules.push({
+                module_code: item.module_code,
+                module_name: item.title,
+                semester: item.semester,
+                marks: item.marks,
+            });
+        });
+
+        // Convert the mapped data object into an array
+        const mappedDataArray = Object.values(mappedData);
+
+       
+
+
+
+        if (results.length > 0) {
+            const data = {
+                title: "Reports",
+                active: "Reports",
+                students: mappedDataArray,
+            }
+            res.render("reports", data)
+        }
+
+    })
+
+
+})
+
+app.get('/send-results/:regnumber', (req, res) => {
+
+    const regnumber = req.params.regnumber;
+
+    const query = `
+    SELECT
+    s.*,
+    g.regnumber,
+    g.module_code,
+    g.semester,
+    g.marks,
+    m.*
+FROM
+    students s
+JOIN
+    grades g ON s.regnumber = g.regnumber
+JOIN 
+    modules m ON m.code = g.module_code
+WHERE g.regnumber = ?
+ORDER BY
+    g.semester;
+    ;`;
+
+    connection.query(query, [regnumber], (error, results) => {
+
+
+
+    
+
+
+
+        if (results.length > 0) {
+            const email = results[0].nk_email
+            const data = {
+                title: "Reports",
+                active: "Reports",
+                regnumber: regnumber,
+                results: results,
+                email:email,
+
+            }
+            //put the students results in session 
+            req.session.studentResults = results
+            if (email==null){
+                res.send("Student Must update their next of kin email address")
+
+            }
+            else{
+            res.render("sendReport", data)
+            }
+        }
+
+    })
+
+
+})
+
+app.post('/send-results/:regnumber/:email', (req, res) => {
+    const emailAddress = req.params.email
+    const results = req.session.studentResults !== undefined ? req.session.studentResults : undefined;
+    const message =[]
+    if (results != undefined){
+    results.map((res) => {
+            message.push(`<p>${res.title} ${res.marks}  ${parseInt(res.module_code)<50? "Fail": "Pass"}\n</p>`)       
+      });
+      const msg = message.join(' ')
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'madalitsomuva@gmail.com',
+            pass: 'fouf qpoh mzdm zypn'
+        }
+    });
+    
+    const mailOptions = {
+        from: 'madalitsomuva@gmail.com',
+        to: 'bit21-mmuva@poly.ac.mw',
+        subject: 'Sending Email using Node.js',
+        html: msg
+    };
+    
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    })
+      
+      delete req.session.studentResults;
+    }
+    else{
+        res.send("Did not success")
+    }
+  
+    res.send("Reached")
+    
+
+})
+
+
 
 app.listen(port, () => {
     console.log(`server started at port ${port}`);

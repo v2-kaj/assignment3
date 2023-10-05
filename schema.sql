@@ -115,6 +115,11 @@ INSERT INTO `modules` (`title`, `code`, `semester`, `department_id`, `level`) VA
 ('Script', 'CSSP121', 2, 1, 1),
 ('Operating Systems', 'CSOP121', 2, 1, 1);
 
+INSERT INTO `modules` (`title`, `code`, `semester`, `department_id`, `level`) VALUES
+ ('Physics', 'ENPH121', 2, 2, 1),
+('Mechanical Science', 'ENMS121', 2, 2, 1),
+('Workshop', 'ENWOP121', 2, 2, 1),
+('Trigonometry', 'ENTR121', 2, 2, 1);
 CREATE TABLE `lecturer_module` (
     `id` int NOT NULL AUTO_INCREMENT,
     `lecturer_id` int NOT NULL,
@@ -155,6 +160,28 @@ CREATE TABLE grades (
         ON DELETE CASCADE
 );
 
+SELECT p.abbreviation, AVG(g.marks) AS average_grade
+FROM programs p
+INNER JOIN students s ON p.program_id = s.program_id
+INNER JOIN grades g ON s.regnumber = g.regnumber
+GROUP BY p.name;
+
+SELECT
+    s.firstname,
+    g.regnumber,
+    g.module_code,
+    g.semester,
+    g.marks
+FROM
+    students s
+JOIN
+    grades g ON s.regnumber = g.regnumber
+ORDER BY
+    s.firstname,
+    g.semester;
+
+
+
 INSERT INTO `grades` ( `regnumber`, `module_code`, `semester`, `marks`)
 VALUES
     ('MIS/23/SS/001', 'CSIP111', 1, 80), 
@@ -175,7 +202,68 @@ VALUES
     ('MIS/23/SS/002','CSOP121', 2, 99),
     ('MIS/23/SS/002','CSSP121', 2, 43);
 
+    INSERT INTO `grades` ( `regnumber`, `module_code`, `semester`, `marks`)
+VALUES
+    ('BAF/23/SS/001', 'COFA111', 1, 76), 
+    ('BAF/23/SS/001','COCA111', 1, 56),
+    ('BAF/23/SS/001','COCA121', 2, 50),
+    ('BAF/23/SS/001','COOB111', 1, 73),
+    ('BAF/23/SS/001','COFA121', 2, 81),
+    ('BAF/23/SS/001','COFA121', 2, 76),
+    ('BAF/23/SS/001','COBL111', 1, 55),
 
+    ('BAF/23/SS/002', 'COFA111',1, 42), 
+    ('BAF/23/SS/002','COCA111', 1, 55),
+    ('BAF/23/SS/002','COCA121', 2, 50),
+    ('BAF/23/SS/002','COOB111', 1, 65),
+    ('BAF/23/SS/002','COFA121', 2, 70),
+    ('BAF/23/SS/002','COFA121', 2, 75),
+    ('BAF/23/SS/002','COBL111', 1, 51),
+    
+
+    ('BAF/23/SS/003', 'COFA111',1, 65), 
+    ('BAF/23/SS/003','COCA111', 1, 80),
+    ('BAF/23/SS/003','COCA121', 2, 54),
+    ('BAF/23/SS/003','COOB111', 1, 90),
+    ('BAF/23/SS/003','COFA121', 2, 70),
+    ('BAF/23/SS/003','COFA121', 2, 52),
+    ('BAF/23/SS/003','COBL111', 1, 80);
+    
+   ENPH121, ENMS121, ENTR121, ENWOP121
+INSERT INTO `grades` ( `regnumber`, `module_code`, `semester`, `marks`)
+VALUES
+    ('BME/23/SS/001', 'ENCA111', 1, 55), 
+    ('BME/23/SS/001','ENCH111', 1, 51),
+    ('BME/23/SS/001','ENED111', 1, 59),
+    ('BME/23/SS/001','ENEM111', 1, 67),
+
+    ('BME/23/SS/001', 'ENPH121', 2, 70), 
+    ('BME/23/SS/001','ENMS121', 2, 50),
+    ('BME/23/SS/001','ENTR121', 2, 51),
+    ('BME/23/SS/001','ENWOP121', 2, 59),
+
+     ('BME/23/SS/002', 'ENCA111', 1, 57), 
+    ('BME/23/SS/002','ENCH111', 1, 61),
+    ('BME/23/SS/002','ENED111', 1, 65),
+    ('BME/23/SS/002','ENEM111', 1, 60),
+
+    ('BME/23/SS/002', 'ENPH121', 2, 61), 
+    ('BME/23/SS/002','ENMS121', 2, 64),
+    ('BME/23/SS/002','ENTR121', 2, 53),
+    ('BME/23/SS/002','ENWOP121', 2, 57),
+
+    ('BME/23/SS/003', 'ENCA111', 1, 41), 
+    ('BME/23/SS/003','ENCH111', 1, 52),
+    ('BME/23/SS/003','ENED111', 1, 50),
+    ('BME/23/SS/003','ENEM111', 1, 34),
+
+    ('BME/23/SS/003', 'ENPH121', 2, 50), 
+    ('BME/23/SS/003','ENMS121', 2, 61),
+    ('BME/23/SS/003','ENTR121', 2, 42),
+    ('BME/23/SS/003','ENWOP121', 2, 40);
+
+
+    
 
 
 
