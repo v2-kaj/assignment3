@@ -8,7 +8,7 @@ const session = require('express-session');
 
 
 const connection = mysql.createPool({
-    host: 'localhost',
+    host: 'http://localhost:4306',
     user: 'root',
     password: '',
     database: 'gms',
@@ -62,7 +62,7 @@ function insertModuleIntoDatabase(moduleCode, lectureId) {
         lecturer_id: lectureId
     }
     connection.query("INSERT INTO lecturer_module SET?", data, (error, results) => {
-        console.log("SMMSMSMSMSM")
+     
         if (error) {
             console.log(error)
         }
@@ -245,7 +245,7 @@ app.post("/students/add-student/verify", (req, res) => {
 
     generateRegNumber(program_id)
         .then(regnumber => {
-            console.log("Generated Registration Number:", regnumber);
+           
             const studentData = {
                 title: "Students",
                 active: "Students",
@@ -322,7 +322,7 @@ app.get("/student", (req, res) => {
 app.get("/student/update-profile", (req, res) => {
     const regnumber = "BME/23/SS/001"
     connection.query("SELECT s.*, p.* FROM students s INNER JOIN programs p ON p.program_id = s.program_id  WHERE regnumber =?", regnumber, (err, results) => {
-        console.log(results)
+       
         if (results.length > 0) {
 
             const data = {
@@ -423,7 +423,7 @@ app.get('/lecturers/:lecturerId/modules', (req, res) => {
             res.status(500).send('An error occurred while fetching assigned modules.');
             return;
         }
-        console.log(results)
+        
         const data = {
             lecturerId: lecturerId,
             title: "Lecturer Modules",
@@ -488,7 +488,7 @@ app.post('/lecturers/add-assessment', (req, res) => {
 app.get('/student/results', (req, res) => {
     const regnumber = "MIS/23/SS/001"
     connection.query("SELECT * FROM grades WHERE regnumber = ? ", [regnumber], (error, results) => {
-        console.log(results)
+       
         const data = {
             title: "Results",
             active: "Results",
@@ -508,7 +508,7 @@ app.get('/performance', (req, res) => {
     GROUP BY p.name;`;
 
     connection.query(query, (error, results) => {
-        console.log(results)
+        
 
         const performanceData = {
             programs: [],
@@ -568,8 +568,7 @@ app.get('/reports', (req, res) => {
 
     connection.query(query, (error, results) => {
         const data = results
-        console.log(data)
-        console.log("EXTRA")
+      
         const mappedData = {};
 
         // Loop through the data and organize it by 'regnumber'
@@ -675,11 +674,13 @@ ORDER BY
 app.post('/send-results/:regnumber/:email', (req, res) => {
     const emailAddress = req.params.email
     const results = req.session.studentResults !== undefined ? req.session.studentResults : undefined;
-    const message =[]
+    const message =[`<p>From: School</p>`]
     if (results != undefined){
     results.map((res) => {
-            message.push(`<p style="color:red">${res.title} ${res.marks}  ${parseInt(res.module_code)<50? "Fail": "Pass"}\n</p>`)       
+            message.push(`<p style="color:red">${res.title} ${res.marks}  ${parseInt(res.module_code)<50? "Fail": "Pass"}</p>`)       
       });
+      console.log(req.body.comments)
+    message.push(`<h1> Administrator Comments</h1><p>${req.body.comments}</p>`)
       const msg = message.join(' ')
       const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -688,11 +689,10 @@ app.post('/send-results/:regnumber/:email', (req, res) => {
             pass: keys.originPassword
         }
     });
-    
     const mailOptions = {
         from: keys.originUser,
         to: 'bit21-mmuva@poly.ac.mw',
-        subject: 'Results',
+        subject: `Exam Results for ${results[0].firstname} ${results[0].lastname}`,
         html: msg
     };
     
