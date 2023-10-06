@@ -2,9 +2,18 @@ const express = require("express");
 const mysql = require('mysql2');
 const nodemailer = require('nodemailer');
 const { keys } = require('./secrets/keys')
+const fs = require('fs');
+const PDFDocument = require('pdfkit');
+const bcrypt = require('bcrypt');
 
 // Set up the session middleware
 const session = require('express-session');
+const { constants } = require("buffer");
+const { connect } = require("http2");
+
+async function hashPassword(password) {
+    return await bcrypt.hash(password, 10);
+}
 
 
 const connection = mysql.createPool({
@@ -147,51 +156,30 @@ app.get("/students", (req, res) => {
 
 
 
-        const query = `SELECT p.abbreviation,
-COUNT(s.regnumber) AS number_of_students
-FROM students s INNER JOIN programs p ON
- s.program_id = p.program_id GROUP BY s.program_id`;
 
-        connection.query(query, (error, results) => {
+        if (students.length > 0) {
 
-            const studentsData = {
+            const data = {
+                title: "Students",
+                active: "Students",
+                students: students,
+
+            };
+            res.render("students", data);
+        }
+        else {
+            const data = {
+                title: "Students",
+                active: "Students",
+                students: students,
                 programs: [],
                 total: []
-            };
-
-            results.forEach(item => {
-                studentsData.programs.push(item.abbreviation);
-                studentsData.total.push(item.number_of_students);
-            });
-
-            // Object destructuring
-            const { programs, total } = studentsData
-
-
-            if (results.length > 0) {
-
-                const data = {
-                    title: "Students",
-                    active: "Students",
-                    students: students,
-                    programs: programs,
-                    total: total,
-                };
-                res.render("students", data);
             }
-            else {
-                const data = {
-                    title: "Students",
-                    active: "Students",
-                    students: students,
-                    programs: [],
-                    total: []
-                }
-                res.render("students", data);
-            }
-        })
-    });
-})
+            res.render("students", data);
+        }
+    })
+});
+
 
 app.get("/students/add-student", (req, res) => {
 
@@ -209,68 +197,66 @@ app.get("/students/add-student", (req, res) => {
     });
 });
 
-app.post("/students/add-student", (req, res) => {
+app.post("/students/add-student", async (req, res) => {
     // Extract the form data from the request
     const { firstname, lastname, regnumber } = req.body;
     const program_id = parseInt(req.body.program, 10);
+
     if (regnumber === undefined) {
-        generateRegNumber(program_id)
-            .then(regnumber => {
-                console.log("Generated Registration Number:", regnumber);
-                // Example usage: Generate a temporary password of length 8
+        try {
+            const regnumber = await generateRegNumber(program_id);
+            console.log("Generated Registration Number:", regnumber);
 
-                const password = generateTemporaryPassword(8);
+            // Example usage: Generate a temporary password of length 8
+            const tempPassword = generateTemporaryPassword(8);
+            const password = await hashPassword(tempPassword);
 
-                //generate a random password
-                const studentData = {
-                    regnumber,
-                    firstname,
-                    lastname,
-                    program_id,
-                    password,
+            // Generate a random password
+            const studentData = {
+                regnumber,
+                firstname,
+                lastname,
+                program_id,
+                password,
+                
+            };
+
+            connection.query("INSERT INTO students SET ?", studentData, (error, results) => {
+                if (error) {
+                    console.log(error);
+                } else {
+                    const data = {
+                        title: "Get Login Details",
+                        active: "Student",
+                        regnumber,
+                        firstname,
+                        lastname,
+                        program_id,
+                        tempPassword,
+                    };
+                    res.render("temporary", data);
                 }
-                connection.query("INSERT INTO students SET?", studentData, (error, results) => {
-                    if (error) {
-                        console.log(error)
-                    }
-                    else {
-                        const data = {
-                            title: "Get Login Details",
-                            active: "Student",
-                            regnumber,
-                            firstname,
-                            lastname,
-                            program_id,
-                            password,
-                        }
-                        res.render("temporary", data)
-                    }
-                })
-            })
-            .catch(error => {
-                console.error("Error:", error);
             });
-    }
-    else {
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    } else {
         const studentData = {
             regnumber,
             firstname,
             lastname,
             program_id,
+        };
 
-        }
-
-        connection.query("INSERT INTO students SET?", studentData, (error, results) => {
+        connection.query("INSERT INTO students SET ?", studentData, (error, results) => {
             if (error) {
-                console.log(error)
+                console.log(error);
+            } else {
+                res.redirect("/students/add-student");
             }
-            else {
-                res.redirect("/students/add-student")
-            }
-        })
+        });
     }
-})
-
+});
 
 app.post("/students/add-student/verify", (req, res) => {
     // Extract the form data from the request
@@ -356,12 +342,12 @@ app.get("/student", (req, res) => {
             active: "Student",
             message: null,
         };
-        
+
         res.render("studentLogin", data);
     }
-    else{
+    else {
         const data = {
-            title:"Dashboard",
+            title: "Dashboard",
             active: "Dashboard",
         }
         res.render('studentDash', data)
@@ -369,31 +355,46 @@ app.get("/student", (req, res) => {
 });
 
 //login the student
-app.post("/student/login", (req, res) => {
-    const { username, password } = req.body
+app.post("/student/login", async (req, res) => {
+    const { username, password } = req.body;
 
-    connection.query('SELECT * FROM students WHERE regnumber=? AND password=?', [username, password], (error, results) => {
-        if (error) throw error
+    connection.query('SELECT * FROM students WHERE regnumber=?', [username], async (error, results) => {
+        if (error) throw error;
+
         if (results.length === 0) {
             const data = {
                 title: "Student",
                 active: "Student",
-                message: "invalid credentials",
+                message: "Invalid credentials",
             };
 
             res.render('studentLogin', data);
-        }
-        else {
-            req.session.studentId = results[0].regnumber
+        } else {
+            const hashedPassword = await hashPassword(password);
+            console.log(hashedPassword);
 
-
-            const data = {
-                title: "Student",
-                active: "Student"
-            };
-            res.render("studentDash", data);
+            bcrypt.compare(password, results[0].password).then((isPasswordCorrect) => {
+                if (isPasswordCorrect) {
+                    req.session.studentId = results[0].regnumber;
+    
+                    const data = {
+                        title: "Student",
+                        active: "Student"
+                    };
+    
+                    res.render("studentDash", data);
+                } else {
+                    const data = {
+                        title: "Student",
+                        active: "Student",
+                        message: "Invalid credentials",
+                    };
+    
+                    res.render('studentLogin', data);
+                }
+            });
         }
-    })
+    });
 });
 
 app.get("/student/update-profile", (req, res) => {
@@ -472,6 +473,87 @@ app.get('/lecturers/add-module/:department', (req, res) => {
     })
 
 });
+
+app.get('/student/results/download-pdf', (req, res) => {
+    const regnumber = req.session.studentId;
+    if (regnumber === undefined) {
+        const data = {
+            title: "Student",
+            active: "Student",
+            message: null,
+        };
+        res.render('studentLogin', data)
+    }
+    else {
+        connection.query('SELECT * FROM grades WHERE regnumber=?', [regnumber], (error, results) => {
+            const semester1Results = results.filter((result) => result.semester === 1)
+            const semester2Results = results.filter((result) => result.semester === 2)
+            console.log(results)
+            const sem1 = semester1Results.map((res) => {
+                return `${res.module_code} ${res.marks}  ${parseInt(res.module_code) < 50 ? 'Fail' : 'Pass'}\n`;
+            });
+
+            const sem2 = semester2Results.map((res) => {
+                return `${res.module_code} ${res.marks}  ${parseInt(res.module_code) < 50 ? 'Fail' : 'Pass'}\n`;
+            });
+
+
+
+            console.log(sem1)
+            // Create a new PDF document
+            const doc = new PDFDocument();
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', 'attachment; filename="results.pdf"');
+
+            // Pipe the PDF content to the response stream
+            doc.pipe(res);
+
+            doc.fontSize(24).text(`Exam Results for: ${regnumber}`, { align: 'center' });
+            doc.moveDown(); // Move down a line
+
+            // Add a heading
+            doc.fontSize(18).text('Semester 1', { underline: true });
+
+
+            // Add some text content
+            doc.fontSize(12).text(`${sem1.join(" ")}`);
+            doc.moveDown(); // Move down a line
+            doc.moveDown(); // Move down a line
+            doc.fontSize(18).text('Semester 2', { underline: true });
+
+
+            // Add some text content
+            doc.fontSize(12).text(`${sem2.join(" ")}`);
+
+
+
+            // End the PDF generation
+            doc.end();
+        })
+
+
+    }
+
+});
+
+
+
+app.get('/delete-student/:regnumber', (req, res) => {
+    const regnumber = req.params.regnumber;
+    connection.query('DELETE FROM students WHERE regnumber=?', [regnumber], (error, results) => {
+        console.log(results)
+        if (results.affectedRows === 1) {
+            const data = {
+                title: "Students",
+                active: "Students",
+                message: "student successfully removed",
+
+            }
+            res.render('removedFeedback', data)
+        }
+    })
+
+})
 
 app.post('/lecturers/add-modules', (req, res) => {
     const selectedModules = req.body.modules;
@@ -607,36 +689,59 @@ app.get('/performance', (req, res) => {
     GROUP BY p.name;`;
 
     connection.query(query, (error, results) => {
+        const query = `SELECT p.abbreviation,
+            COUNT(s.regnumber) AS number_of_students
+            FROM students s INNER JOIN programs p ON
+            s.program_id = p.program_id GROUP BY s.program_id`;
+
+        connection.query(query, (error, countResults) => {
+
+            const studentsData = {
+                programsAb: [],
+                total: []
+            };
+
+            countResults.forEach(item => {
+                studentsData.programsAb.push(item.abbreviation);
+                studentsData.total.push(item.number_of_students);
+            });
+
+            // Object destructuring
+            const { programsAb, total } = studentsData
 
 
-        const performanceData = {
-            programs: [],
-            avg: []
-        };
-
-        results.forEach(item => {
-            performanceData.programs.push(item.abbreviation);
-            performanceData.avg.push(item.average_grade);
-        });
-
-        // Object destructuring
-        const { programs, avg } = performanceData
 
 
+            const performanceData = {
+                programs: [],
+                avg: []
+            };
+
+            results.forEach(item => {
+                performanceData.programs.push(item.abbreviation);
+                performanceData.avg.push(item.average_grade);
+            });
+
+            // Object destructuring
+            const { programs, avg } = performanceData
 
 
-        if (results.length > 0) {
-            const data = {
-                title: "Performance",
-                active: "Performance",
-                programs: programs,
-                avg: avg,
+
+
+            if (results.length > 0) {
+                const data = {
+                    title: "Performance",
+                    active: "Performance",
+                    programs: programs,
+                    programsAb: programsAb,
+                    total: total,
+                    avg: avg,
+                }
+                res.render("performance", data)
             }
-            res.render("performance", data)
-        }
 
+        })
     })
-
 
 })
 

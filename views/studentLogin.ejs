@@ -1,81 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #f4f4f4;
-        }
+    <meta charset="utf-8">
+    <title></title>
+    <style media="screen">
+       *{
+      margin: 0;
+      box-sizing: border-box;
+      --background-color: springgreen;
+    }
+      main{
+        display: flex;
+        justify-content: center; /* center holizontally */
+        align-items: center; /* center vertically */
+        background-color: var(--background-color);
+        width: 100vw;
+        height: 100vh;
+      }
+      form{
+        display: flex;
+        justify-content: center; /* center holizontally */
+        align-items: center; /* center vertically */
+        background-color: white;
+        width:25rem;
+        height: 15rem;
+        border-radius: 0.2rem;
+      }
+      [type]{
+        width: 20rem;
+        border: 0px;
+        border-bottom: 1px solid  var(--background-color);
+        padding:0.5rem;
+      }
+      [type="submit"]{
+        background:  var(--background-color);
+        color:white;
+        font-weight: bold;
+      }
+      [type="text"]:hover{
+        border: 0px;
+        border-bottom: 1px solid ;
+      }
 
-        .login-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            text-align: center;
-        }
-
-        .login-container h2 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: bold;
-            color: #555;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .form-group input[type="submit"] {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-        }
-
-        .form-group input[type="submit"]:hover {
-            background-color: #0056b3;
-        }
     </style>
 </head>
+
 <body>
-    <div class="login-container">
-        <h2>Login</h2>
-        <% if (message) { %>
-            <p><%= message %></p>
-          <% } %>
-        <form action="/student/login" method="post">
-            <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" placeholder="Enter your username" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password" required>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Login">
-            </div>
-        </form>
-    </div>
+    <main>
+        <section>
+            <h2>Login</h2>
+            <% if (message) { %>
+                <p>
+                    <%= message %>
+                </p>
+                <% } %>
+                    <form class="" action="/student/login" method="post">
+                        <div class="">
+                            Username <br>
+                            <input type="text" name="username">
+                            <br><br>
+                            Password <br>
+                            <input type="password" name="password">
+                            <br><br>
+                            <input type="submit" value="Login">
+                        </div>
+                    </form>
+        </section>
+    </main>
 </body>
+
 </html>

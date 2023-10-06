@@ -73,6 +73,60 @@
                   <% } %>
 
               </div>
+              <div>
+
+                <div class="chart">
+                  <canvas id="studentsDataChart" style="width:100%;max-width:400px"></canvas>
+                  <script>
+
+                    var programs = <%- JSON.stringify(programsAb) %>;
+                    var total = <%- JSON.stringify(total) %>;
+
+                    new Chart("studentsDataChart", {
+                      type: "bar",
+                      data: {
+                        labels: programs,
+                        datasets: [{
+                          backgroundColor: [
+                            "red",
+                            "green",
+                            "blue",
+                          ],
+                          data: total
+                        }]
+                      },
+                      options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        legend: { display: false },
+                        title: {
+                          display: true,
+                          text: "Number of students per program"
+                        },
+                        scales: {
+                          yAxes: [{
+                            ticks: {
+                              stepSize: 1,
+                              beginAtZero: true
+                            },
+                            scaleLabel: {
+                              display: true,
+                              labelString: "Number of Students"
+                            }
+                          }],
+                          xAxes: [{
+                            scaleLabel: {
+                              display: true,
+                              labelString: "Program Abbreviation"
+                            }
+                          }]
+                        }
+                      }
+                    })
+
+
+                  </script>
+                </div>
             </div>
 
         </main>

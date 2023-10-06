@@ -1,287 +1,295 @@
 * {
-    box-sizing: border-box;
-    margin: 0;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    --navbgcolor:#4caf50;
-    padding: 0  ;
-  
-  }
-  body{
-    background-color: rgb(246, 246, 182);
-    font-size: x-large;
-  }
-  
+  box-sizing: border-box;
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  --navbgcolor: #4caf50;
+  --inputbgcolor: seagreen;
+  padding: 0;
+
+}
+
+body {
+  background-color: rgb(246, 246, 182);
+  font-size: x-large;
+}
+
+.hamburger-menu {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.bar {
+  width: 25px;
+  height: 3px;
+  background-color: white;
+  margin: 3px 0;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  height: auto;
+
+
+}
+
+nav {
+  flex: 1;
+
+  background-color: var(--navbgcolor);
+  padding: 0.5rem;
+  border: 1px solid var(--navbgcolor);
+
+  height: 100vh;
+  position: fixed;
+
+}
+
+
+.active {
+  background-color: #347935;
+}
+
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-list li {
+  width: 17rem;
+  margin-bottom: 5px;
+
+
+}
+
+.nav-list li a {
+  text-decoration: none;
+  padding: 0.3rem;
+  color: white;
+  display: block;
+  font-size: 0.85rem;
+  width: 100%;
+  font-size: large;
+
+
+}
+
+#header {
+  display: flex;
+  padding-top: 0.4rem;
+  width: 100%;
+
+  padding-bottom: -2px;
+}
+
+#header input {
+  width: 95%;
+  padding: 0.45rem;
+  border-radius: 1rem;
+  border: 0.05rem solid blue;
+}
+
+.content {
+  margin: 0.7rem 0.3rem 0 0.1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  background-color: rgb(255, 255, 255);
+  border-radius: 0.4rem;
+  padding: 0.7rem;
+
+
+
+}
+
+.chart {
+  flex: 2;
+  margin-bottom: 2.5rem;
+
+}
+
+main {
+  flex: 1;
+  margin-left: 18rem;
+  padding-left: 1rem;
+
+
+}
+
+
+#header {
+  position: sticky;
+  top: 0;
+  padding-bottom: 1rem;
+}
+
+.material-icons {
+  vertical-align: middle;
+  margin-right: 0.3rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+
+}
+
+td table {
+  border: none;
+}
+
+th {
+  text-align: left;
+}
+
+td table tr {
+  border-bottom: 1px solid black;
+}
+
+form {
+
+  justify-content: center;
+  /* center holizontally */
+  align-items: center;
+  /* center vertically */
+  background-color: white;
+  width: 25rem;
+
+  border-radius: 0.2rem;
+}
+
+
+[type] {
+  width: 20rem;
+  border: 0px;
+  border-bottom: 1px solid var(--inputbgcolor);
+  padding: 0.5rem;
+}
+
+[type="radio"] {
+  width: 2rem;
+  border: 7px;
+  padding: 0
+}
+
+
+[type="submit"] {
+  background: var(--inputbgcolor);
+  color: white;
+  font-weight: bold;
+
+}
+
+button {
+  background: var(--inputbgcolor);
+  width: 5rem;
+  padding: 0.16rem;
+  border: 0.1rem solid var(--inputbgcolor);
+  border-radius: 0.09rem;
+
+}
+
+[type="text"]:hover {
+  border: 0px;
+  border-bottom: 1px solid;
+}
+
+/* Style the main content area */
+main {
+  padding: 20px;
+}
+
+@media only screen and (max-width: 600px) {
+
   .hamburger-menu {
-    display: none;
-    flex-direction: column;
-    cursor: pointer;
+    display: flex;
+    float: right;
+
   }
-  
-  .bar {
-    width: 25px;
-    height: 3px;
-    background-color: white;
-    margin: 3px 0;
-  }
-  
+
   .container {
     display: flex;
-    flex-direction: row;
-    height: auto;
-    
-  
+    flex-direction: column;
   }
-  
+
+  .content {
+    display: flex;
+    flex-direction: column;
+  }
+
   nav {
-    flex: 1;
-    
-    background-color: var(--navbgcolor);
-    padding: 0.5rem;
-    border: 1px solid var(--navbgcolor);
-  
-    height: 100vh;
-    position: fixed;
-  
+    border-radius: 0;
+
+    position: static;
   }
-  
-  
-  .active {
-    background-color: #347935;
-  }
-  
-  .nav-list {
-    list-style: none;
-    padding: 0;
+
+  main {
+    flex-grow: 0;
     margin: 0;
   }
-  
+
   .nav-list li {
-    width: 17rem;
-    margin-bottom: 5px;
-    
-  
-  }
-  
-  .nav-list li a {
-    text-decoration: none;
-    padding: 0.3rem;
-    color: white;
-    display: block;
-    font-size: 0.85rem;
     width: 100%;
-    font-size: large;
-  
-  
-  }
-  
-  #header {
-    display: flex;
-    padding-top: 0.4rem;
-    width: 100%;
-   
-    padding-bottom: -2px;
-  }
-  
-  #header input {
-    width: 95%;
-    padding: 0.45rem;
-    border-radius: 1rem;
-    border: 0.05rem solid blue;
-  }
-  
-  .content {
-    margin: 0.7rem 0.3rem 0 0.1rem;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    background-color: rgb(255, 255, 255);
-    border-radius: 0.4rem;
-    padding: 0.7rem;
-  
-    
-  
-  }
-  
-  .chart {
-    flex: 2;
-    margin-bottom: 2.5rem;
-  
-  }
-  
-  main {
-    flex: 1;
-    margin-left: 18rem;
-    padding-left: 1rem;
-    
-  
-  }
-  
-  
-  #header {
-    position: sticky;
-    top: 0;
-    padding-bottom: 1rem;
-  
-  
-  }
-  
-  
-  .material-icons {
-    vertical-align: middle;
-    margin-right: 0.3rem;
+
+
   }
 
-  table {
+  #nav-links {
+    display: none;
+
+    flex-direction: column;
+    z-index: 1;
+  }
+
+  #nav-links.show {
+    display: block;
+  }
+
+  input {
     width: 100%;
-    border-collapse: collapse;
-   
   }
-  td table{
-    border: none;
+
+  form {
+
+    justify-content: center;
+    /* center holizontally */
+    align-items: center;
+    /* center vertically */
+    background-color: white;
+    width: 100%;
+
+    border-radius: 0.2rem;
   }
-  th{
+
+  [type] {
+    width: 100%;
+
+  }
+
+  .content,
+  main {
+    margin: 0.1rem;
+
+    padding: 0.2rem;
+
+
+
+  }
+
+  th,
+  td {
+    display: block;
+    width: 100%;
+  }
+
+  th {
     text-align: left;
   }
-  td table tr{
-    border-bottom: 1px solid black;
-  }
-  form {
-    width: 100%;
-    max-width: 400px; /* Adjust as needed */
-    margin: 20px auto;
-    padding: 20px;
-    border: 1px solid #ddd;
-    background-color: #f2f2f2;
-    border-radius: 5px;
-  }
+}
 
-  /* Style form labels */
-  label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #333; /* Label text color */
-  }
 
-  /* Style form input fields */
-  input[type="text"],
-  input[type="email"],
-  input[type="password"],
-  datalist,
-  option,
-  textarea {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 3px;
-    background-color: #fff; /* Input field background color */
-    color: #333; /* Input text color */
-    transition: border-color 0.3s; /* Add a transition effect to border color */
-  }
 
-  /* Style form input fields on focus */
-  input[type="text"]:focus,
-  input[type="email"]:focus,
-  input[type="password"]:focus,
-  textarea:focus {
-    border-color: #4caf50; /* Change border color on focus */
-  }
-
-  /* Style form submit button */
-  input[type="submit"], optiont{
-    background-color: #4caf50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-
-  /* Style form submit button on hover */
-  input[type="submit"]:hover {
-    background-color: #45a049;
-  }
-
-  /* Style the main content area */
-  main {
-    padding: 20px;
-  }
-  
-  @media only screen and (max-width: 600px) {
-   
-    .hamburger-menu {
-      display: flex;
-      float: right;
-  
-    }
-  
-    .container {
-      display: flex;
-      flex-direction: column;
-    }
-  
-    .content {
-      display: flex;
-      flex-direction: column;
-    }
-  
-    nav {
-      border-radius:0;
-  
-      position: static;
-    }
-  
-    main {
-      flex-grow: 0;
-      margin: 0;
-    }
-    .nav-list li {
-      width: 100%;
-      
-    
-    }
-  
-    #nav-links {
-      display: none;
-      
-      flex-direction: column;
-      z-index: 1;
-    }
-  
-    #nav-links.show {
-      display: block;
-    }
-    input{
-      width: 100%;
-    }
-    form {
-      width: 100%;
-      max-width: 400px; /* Adjust as needed */
-      margin: 0;
-      padding: 0;
-      border: 1px solid #ddd;
-      background-color: #f2f2f2;
-      border-radius: 5px;
-    }
-    .content {
-      margin: 0;
-    
-      padding: 0;
-    
-      
-    
-    }
-    
-  
-  
-  }
-  
-  
-  
-  
-  
-  
-  
+}

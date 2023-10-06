@@ -17,97 +17,46 @@
             <div class="content">
               <% if (students.length> 0) { %>
                 <div>
-                <table>
-                  <tr>
-                    <th>Regnumber</th>
-                    <th>Firstname</th>
-                    <th>Lastname</th>
-                    <th>Program</th>
-                  </tr>
-
-                  <% students.forEach(function(student) { %>
+                  <table>
                     <tr>
-                      <td>
-                        <%= student.regnumber %>
-                      </td>
-                      <td>
-                        <%= student.firstname %>
-                      </td>
-                      <td>
-                        <%= student.lastname %>
-                      </td>
-                      <td>
-                        <%= student.abbreviation %>
-                      </td>
+                      <th>Regnumber</th>
+                      <th>Firstname</th>
+                      <th>Lastname</th>
+                      <th>Program</th>
                     </tr>
-                    <% }); %>
-                </table>
-              </div>
 
-
-                <div>
-                  <div class="chart">
-                    <canvas id="studentsDataChart" style="width:100%;max-width:400px"></canvas>
-                    <script>
-
-                      var programs = <%- JSON.stringify(programs) %>;
-                      var total = <%- JSON.stringify(total) %>;
-  
-                      new Chart("studentsDataChart", {
-                        type: "bar",
-                        data: {
-                          labels: programs,
-                          datasets: [{
-                            backgroundColor: [
-                              "red",
-                              "green",
-                              "blue",
-                            ],
-                            data: total
-                          }]
-                        },
-                        options: {
-                          responsive: true,
-                          maintainAspectRatio: false,
-                          legend: { display: false },
-                          title: {
-                            display: true,
-                            text: "Number of students per program"
-                          },
-                          scales: {
-                            yAxes: [{
-                              ticks: {
-                                stepSize: 1,
-                                beginAtZero: true
-                              },
-                              scaleLabel: {
-                                display: true,
-                                labelString: "Number of Students"
-                              }
-                            }],
-                            xAxes: [{
-                              scaleLabel: {
-                                display: true,
-                                labelString: "Program Abbreviation"
-                              }
-                            }]
-                          }
-                        }
-                      })
-  
-  
-                    </script>
-                  </div>
-                  
-                  <% } else { %>
-                    <p>No student registered so far.</p>
-                    <% } %>
-
+                    <% students.forEach(function(student) { %>
+                      <tr>
+                        <td>
+                          <%= student.regnumber %>
+                        </td>
+                        <td>
+                          <%= student.firstname %>
+                        </td>
+                        <td>
+                          <%= student.lastname %>
+                        </td>
+                        <td>
+                          <%= student.abbreviation %>
+                        </td>
+                        <td>
+                          <button><a href="/delete-student/<%= encodeURIComponent(student.regnumber)%>">Delete
+                              Student</a></button>
+                        </td>
+                      </tr>
+                      <% }); %>
+                  </table>
                 </div>
+
+                <% } else { %>
+                  <p>No student registered so far.</p>
+                  <% } %>
+
             </div>
+    </div>
 
 
-        </main>
+    </main>
 
 
     </div>
