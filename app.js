@@ -1,14 +1,15 @@
 const express = require("express");
 const mysql = require('mysql2');
 const nodemailer = require('nodemailer');
-const {keys} = require('./secrets/keys')
+const { keys } = require('./secrets/keys')
 
 // Set up the session middleware
 const session = require('express-session');
 
 
 const connection = mysql.createPool({
-    host: 'http://localhost:4306',
+    host: 'localhost',
+    port: 4306,
     user: 'root',
     password: '',
     database: 'gms',
@@ -19,11 +20,24 @@ const connection = mysql.createPool({
 
 const port = 8000
 
+
 const app = express();
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }))
 app.use(session({ secret: 'group8-group8', resave: false, saveUninitialized: true }));
+function generateTemporaryPassword(length) {
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+";
+    let password = "";
+
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * charset.length);
+        password += charset.charAt(randomIndex);
+    }
+
+    return password;
+}
+
 const generateRegNumber = async (program_id) => {
     try {
         const program = await queryProgram(program_id);
@@ -62,7 +76,7 @@ function insertModuleIntoDatabase(moduleCode, lectureId) {
         lecturer_id: lectureId
     }
     connection.query("INSERT INTO lecturer_module SET?", data, (error, results) => {
-     
+
         if (error) {
             console.log(error)
         }
@@ -120,6 +134,10 @@ app.get("/", (req, res) => {
     res.render("index", data);
 });
 
+app.get("/student/logout", (req, res) => {
+    delete req.session.studentId
+    res.redirect('/student');
+});
 app.get("/students", (req, res) => {
     connection.query(`SELECT s.*, p.*
     FROM students s
@@ -199,18 +217,33 @@ app.post("/students/add-student", (req, res) => {
         generateRegNumber(program_id)
             .then(regnumber => {
                 console.log("Generated Registration Number:", regnumber);
+                // Example usage: Generate a temporary password of length 8
+
+                const password = generateTemporaryPassword(8);
+
+                //generate a random password
                 const studentData = {
                     regnumber,
                     firstname,
                     lastname,
                     program_id,
+                    password,
                 }
                 connection.query("INSERT INTO students SET?", studentData, (error, results) => {
                     if (error) {
                         console.log(error)
                     }
                     else {
-                        res.redirect("/students/add-student")
+                        const data = {
+                            title: "Get Login Details",
+                            active: "Student",
+                            regnumber,
+                            firstname,
+                            lastname,
+                            program_id,
+                            password,
+                        }
+                        res.render("temporary", data)
                     }
                 })
             })
@@ -224,6 +257,7 @@ app.post("/students/add-student", (req, res) => {
             firstname,
             lastname,
             program_id,
+
         }
 
         connection.query("INSERT INTO students SET?", studentData, (error, results) => {
@@ -242,10 +276,11 @@ app.post("/students/add-student/verify", (req, res) => {
     // Extract the form data from the request
     const { firstname, lastname } = req.body;
     const program_id = parseInt(req.body.program, 10);
+    const password = generateTemporaryPassword(8);
 
     generateRegNumber(program_id)
         .then(regnumber => {
-           
+
             const studentData = {
                 title: "Students",
                 active: "Students",
@@ -253,6 +288,8 @@ app.post("/students/add-student/verify", (req, res) => {
                 firstname,
                 lastname,
                 program_id,
+                password,
+
             }
             res.render("addStudentVerify", studentData)
         })
@@ -316,39 +353,66 @@ app.get("/student", (req, res) => {
         title: "Student",
         active: "Student"
     };
-    res.render("student", data);
+    res.render("studentLogin", data);
 });
 
-app.get("/student/update-profile", (req, res) => {
-    const regnumber = "BME/23/SS/001"
-    connection.query("SELECT s.*, p.* FROM students s INNER JOIN programs p ON p.program_id = s.program_id  WHERE regnumber =?", regnumber, (err, results) => {
-       
-        if (results.length > 0) {
+//login the student
+app.post("/student/login", (req, res) => {
+    const { username, password } = req.body
 
-            const data = {
-                title: "Student",
-                active: "Student",
-                profile: results[0],
+    connection.query('SELECT * FROM students WHERE regnumber=? AND password=?', [username, password], (error, results) => {
+        if (error) throw error
 
-            };
-            res.render("updateProfile", data);
-        }
-        else {
-            res.send("Student doesnt exist")
-        }
+        req.session.studentId = results[0].regnumber
+
+
+        const data = {
+            title: "Student",
+            active: "Student"
+        };
+        res.render("studentDash", data);
     })
 });
 
+app.get("/student/update-profile", (req, res) => {
+
+    const regnumber = req.session.studentId
+    if (regnumber === undefined) {
+        res.redirect('/student')
+    }
+    else {
+        connection.query("SELECT s.*, p.* FROM students s INNER JOIN programs p ON p.program_id = s.program_id  WHERE regnumber =?", regnumber, (err, results) => {
+
+            if (results.length > 0) {
+
+                const data = {
+                    title: "Student",
+                    active: "Student",
+                    profile: results[0],
+
+                };
+                res.render("updateProfile", data);
+            }
+            else {
+                res.send("Student doesnt exist")
+            }
+        })
+    }
+});
+
 app.post("/student/update-profile", (req, res) => {
-    const regnumber = "BME/23/SS/001"
+    const regnumber = req.session.studentId
+    if (regnumber === undefined) {
+        res.redirect("/student")
+    }
+    else {
+        const gender = req.body.gender
+        const nk_full_name = req.body.nk_full_name
+        const nk_relationship = req.body.nk_relationship
+        const nk_phone_number = req.body.nk_phone_number
+        const nk_email = req.body.nk_email
 
-    const gender = req.body.gender
-    const nk_full_name = req.body.nk_full_name
-    const nk_relationship = req.body.nk_relationship
-    const nk_phone_number = req.body.nk_phone_number
-    const nk_email = req.body.nk_email
-
-    const updateQuery = `UPDATE students SET
+        const updateQuery = `UPDATE students SET
     gender = ?,
     nk_full_name = ?,
     nk_relationship = ?,
@@ -356,20 +420,19 @@ app.post("/student/update-profile", (req, res) => {
     nk_email= ?
     WHERE regnumber = ?`;
 
-    // Execute the update query
-    connection.query(updateQuery, [gender, nk_full_name, nk_relationship, nk_phone_number, nk_email, regnumber], (err, result) => {
-        if (err) throw err;
-
-        // Check if any rows were affected
-        if (result.affectedRows > 0) {
-            res.render("feedback", { title: "Students", active: "Students", message: 'Student information updated successfully' });
-        } else {
-            res.send('No matching student found for the provided regnumber');
-        }
-    })
+        // Execute the update query
+        connection.query(updateQuery, [gender, nk_full_name, nk_relationship, nk_phone_number, nk_email, regnumber], (err, result) => {
+            if (err) throw err;
+            // Check if any rows were affected
+            if (result.affectedRows > 0) {
+                res.render("feedback", { title: "Students", active: "Students", message: 'Student information updated successfully' });
+            } else {
+                res.send('No matching student found for the provided regnumber');
+            }
+        })
+    }
 
 })
-
 
 // add module to a lecture
 app.get('/lecturers/add-module/:department', (req, res) => {
@@ -423,7 +486,7 @@ app.get('/lecturers/:lecturerId/modules', (req, res) => {
             res.status(500).send('An error occurred while fetching assigned modules.');
             return;
         }
-        
+
         const data = {
             lecturerId: lecturerId,
             title: "Lecturer Modules",
@@ -488,7 +551,7 @@ app.post('/lecturers/add-assessment', (req, res) => {
 app.get('/student/results', (req, res) => {
     const regnumber = "MIS/23/SS/001"
     connection.query("SELECT * FROM grades WHERE regnumber = ? ", [regnumber], (error, results) => {
-       
+
         const data = {
             title: "Results",
             active: "Results",
@@ -508,7 +571,7 @@ app.get('/performance', (req, res) => {
     GROUP BY p.name;`;
 
     connection.query(query, (error, results) => {
-        
+
 
         const performanceData = {
             programs: [],
@@ -568,7 +631,7 @@ app.get('/reports', (req, res) => {
 
     connection.query(query, (error, results) => {
         const data = results
-      
+
         const mappedData = {};
 
         // Loop through the data and organize it by 'regnumber'
@@ -596,7 +659,7 @@ app.get('/reports', (req, res) => {
         // Convert the mapped data object into an array
         const mappedDataArray = Object.values(mappedData);
 
-       
+
 
 
 
@@ -641,7 +704,7 @@ ORDER BY
 
 
 
-    
+
 
 
 
@@ -652,17 +715,17 @@ ORDER BY
                 active: "Reports",
                 regnumber: regnumber,
                 results: results,
-                email:email,
+                email: email,
 
             }
             //put the students results in session 
             req.session.studentResults = results
-            if (email==null){
+            if (email == null) {
                 res.send("Student Must update their next of kin email address")
 
             }
-            else{
-            res.render("sendReport", data)
+            else {
+                res.render("sendReport", data)
             }
         }
 
@@ -674,44 +737,44 @@ ORDER BY
 app.post('/send-results/:regnumber/:email', (req, res) => {
     const emailAddress = req.params.email
     const results = req.session.studentResults !== undefined ? req.session.studentResults : undefined;
-    const message =[`<p>From: School</p>`]
-    if (results != undefined){
-    results.map((res) => {
-            message.push(`<p style="color:red">${res.title} ${res.marks}  ${parseInt(res.module_code)<50? "Fail": "Pass"}</p>`)       
-      });
-      console.log(req.body.comments)
-    message.push(`<h1> Administrator Comments</h1><p>${req.body.comments}</p>`)
-      const msg = message.join(' ')
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: keys.originUser,
-            pass: keys.originPassword
-        }
-    });
-    const mailOptions = {
-        from: keys.originUser,
-        to: 'bit21-mmuva@poly.ac.mw',
-        subject: `Exam Results for ${results[0].firstname} ${results[0].lastname}`,
-        html: msg
-    };
-    
-    transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            console.log(error);
-        } else {
-            console.log('Email sent: ' + info.response);
-        }
-    })
-      
-      delete req.session.studentResults;
+    const message = [`<p>From: School</p>`]
+    if (results != undefined) {
+        results.map((res) => {
+            message.push(`<p style="color:red">${res.title} ${res.marks}  ${parseInt(res.module_code) < 50 ? "Fail" : "Pass"}</p>`)
+        });
+        console.log(req.body.comments)
+        message.push(`<h1> Administrator Comments</h1><p>${req.body.comments}</p>`)
+        const msg = message.join(' ')
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: keys.originUser,
+                pass: keys.originPassword
+            }
+        });
+        const mailOptions = {
+            from: keys.originUser,
+            to: 'bit21-mmuva@poly.ac.mw',
+            subject: `Exam Results for ${results[0].firstname} ${results[0].lastname}`,
+            html: msg
+        };
+
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        })
+
+        delete req.session.studentResults;
     }
-    else{
+    else {
         res.send("Did not success")
     }
-  
+
     res.send("Reached")
-    
+
 
 })
 

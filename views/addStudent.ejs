@@ -11,7 +11,7 @@
             <h1>
               <%= title %>
             </h1>
-            <div class="content"> </div>
+            <div class="content"> 
             <form action="/students/add-student" method="post">
               <label for="firstname">First Name</label>
               <br>
@@ -32,19 +32,12 @@
                   <option value="<%= program.program_id %>"><%= program.name %></option>
                 <% }); %>
               </datalist>
-            
-              
-              
-              
-              
+          
               <br><br>
-              <button type="submit" name="postButton" formaction="/students/add-student">Add Student</button>
-              <button type="submit" name="postButton" formaction="/students/add-student/verify">Verify Before Adding</button>
+
+              <button type="submit" name="postButton" formaction="/students/add-student">Verify Before Adding</button>
             </form>
-            
-
-
-
+          </div>
 
         </main>
 
