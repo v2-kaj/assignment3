@@ -324,6 +324,7 @@ app.get("/lecturers/add-lecturer", (req, res) => {
     })
 
 })
+
 app.post("/lecturers/add-lecturer", (req, res) => {
     // Extract the form data from the request
     const { firstname, lastname } = req.body;
@@ -349,11 +350,22 @@ app.post("/lecturers/add-lecturer", (req, res) => {
 
 //student home page
 app.get("/student", (req, res) => {
-    const data = {
-        title: "Student",
-        active: "Student"
-    };
-    res.render("studentLogin", data);
+    if (req.session.studentId === undefined) {
+        const data = {
+            title: "Student",
+            active: "Student",
+            message: null,
+        };
+        
+        res.render("studentLogin", data);
+    }
+    else{
+        const data = {
+            title:"Dashboard",
+            active: "Dashboard",
+        }
+        res.render('studentDash', data)
+    }
 });
 
 //login the student
@@ -362,15 +374,25 @@ app.post("/student/login", (req, res) => {
 
     connection.query('SELECT * FROM students WHERE regnumber=? AND password=?', [username, password], (error, results) => {
         if (error) throw error
+        if (results.length === 0) {
+            const data = {
+                title: "Student",
+                active: "Student",
+                message: "invalid credentials",
+            };
 
-        req.session.studentId = results[0].regnumber
+            res.render('studentLogin', data);
+        }
+        else {
+            req.session.studentId = results[0].regnumber
 
 
-        const data = {
-            title: "Student",
-            active: "Student"
-        };
-        res.render("studentDash", data);
+            const data = {
+                title: "Student",
+                active: "Student"
+            };
+            res.render("studentDash", data);
+        }
     })
 });
 
@@ -549,16 +571,30 @@ app.post('/lecturers/add-assessment', (req, res) => {
     );
 });
 app.get('/student/results', (req, res) => {
-    const regnumber = "MIS/23/SS/001"
-    connection.query("SELECT * FROM grades WHERE regnumber = ? ", [regnumber], (error, results) => {
+    const regnumber = req.session.studentId
 
+    if (regnumber === undefined) {
         const data = {
-            title: "Results",
-            active: "Results",
-            grades: results,
-        }
+            title: "Student",
+            active: "Student",
+            message: null,
+        };
+        res.render('student', data)
+    } else {
 
-    })
+        connection.query("SELECT * FROM grades WHERE regnumber=?", [regnumber], (error, results) => {
+
+
+
+            const data = {
+                title: "Results",
+                active: "Results",
+                grades: results,
+            }
+            res.render('studentResults', data)
+
+        })
+    }
 
 
 })

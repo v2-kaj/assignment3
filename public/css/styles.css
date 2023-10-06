@@ -140,6 +140,9 @@
   td table{
     border: none;
   }
+  th{
+    text-align: left;
+  }
   td table tr{
     border-bottom: 1px solid black;
   }
