@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('./partials/head') %>
+
+  <body>
+    <div class="container">
+      <%- include("partials/nav")%>
+        <main>
+          <%- include("partials/searchBar")%>
+
+            <h1>
+              <%= title %>
+            </h1>
+            <a href="/<%=route%>">Go back to <%=route%> </a>
+            <div class="content">
+
+              <% if (message) { %>
+                <p>
+                  <%= message %>
+                </p>
+              <% } else { %>
+                <p>Nothing to see here</p>
+              <% } %>
+            </div>
+            
+
+        </main>
+    </div>
+
+  </body>
+
+</html>

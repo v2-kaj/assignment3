@@ -14,16 +14,16 @@
             <div class="content">
               <% if (programs.length> 0) { %>
               <div class="chart">
-                <canvas id="performanceChart" style="width:100%;max-width:400px"></canvas>
+                <canvas id="performanceChart" style="width:100%;max-width:600px"></canvas>
                 <script>
 
                   var programs = <%- JSON.stringify(programs) %>;
                   var avg = <%- JSON.stringify(avg) %>;
 
                   new Chart("performanceChart", {
-                    type: "horizontalBar",
+                    type: "pie",
                     data: {
-                      labels: programs,
+                      
                       datasets: [{
                         backgroundColor: [
                           "springgreen",
@@ -73,10 +73,10 @@
                   <% } %>
 
               </div>
-              <div>
 
+              <div>
                 <div class="chart">
-                  <canvas id="studentsDataChart" style="width:100%;max-width:400px"></canvas>
+                  <canvas id="studentsDataChart" style="width:100%;max-width:600px"></canvas>
                   <script>
 
                     var programs = <%- JSON.stringify(programsAb) %>;
@@ -127,6 +127,7 @@
 
                   </script>
                 </div>
+                
             </div>
 
         </main>

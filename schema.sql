@@ -292,6 +292,31 @@ VALUES
 
 SELECT p.abbreviation, COUNT(s.regnumber) AS number_of_students FROM students s INNER JOIN programs p ON s.program_id = p.program_id GROUP BY s.program_id;
 
+WITH RankedGrades AS (
+    SELECT
+        p.name as pname,
+        g.regnumber,
+        g.module_code,
+        g.semester,
+        g.marks,
+        RANK() OVER (PARTITION BY p.name ORDER BY g.marks DESC) AS ranking
+    FROM
+        grades g
+    JOIN
+        students s ON g.regnumber = s.regnumber
+    JOIN
+        programs p ON s.program_id = p.program_id
+)
+
+SELECT
+    regnumber,
+    pname,
+    semester,
+    marks
+FROM
+    RankedGrades
+WHERE
+    ranking = 1;
 
 
 

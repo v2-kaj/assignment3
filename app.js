@@ -490,11 +490,11 @@ app.get('/student/results/download-pdf', (req, res) => {
             const semester2Results = results.filter((result) => result.semester === 2)
             console.log(results)
             const sem1 = semester1Results.map((res) => {
-                return `${res.module_code} ${res.marks}  ${parseInt(res.module_code) < 50 ? 'Fail' : 'Pass'}\n`;
+                return `${res.module_code} ${res.marks}  ${parseInt(res.marks) < 50 ? 'Fail' : 'Pass'}\n`;
             });
 
             const sem2 = semester2Results.map((res) => {
-                return `${res.module_code} ${res.marks}  ${parseInt(res.module_code) < 50 ? 'Fail' : 'Pass'}\n`;
+                return `${res.module_code} ${res.marks}  ${parseInt(res.marks) < 50 ? 'Fail' : 'Pass'}\n`;
             });
 
 
@@ -665,8 +665,6 @@ app.get('/student/results', (req, res) => {
     } else {
 
         connection.query("SELECT * FROM grades WHERE regnumber=?", [regnumber], (error, results) => {
-
-
 
             const data = {
                 title: "Results",
@@ -879,9 +877,10 @@ app.post('/send-results/:regnumber/:email', (req, res) => {
     const emailAddress = req.params.email
     const results = req.session.studentResults !== undefined ? req.session.studentResults : undefined;
     const message = [`<p>From: School</p>`]
+    console.log(results)
     if (results != undefined) {
         results.map((res) => {
-            message.push(`<p style="color:red">${res.title} ${res.marks}  ${parseInt(res.module_code) < 50 ? "Fail" : "Pass"}</p>`)
+            message.push(`<p style="color:blue">${res.title} ${res.marks}  ${parseInt(res.marks) < 50 ? "Fail" : "Pass"}</p>`)
         });
         console.log(req.body.comments)
         message.push(`<h1> Administrator Comments</h1><p>${req.body.comments}</p>`)
@@ -895,7 +894,7 @@ app.post('/send-results/:regnumber/:email', (req, res) => {
         });
         const mailOptions = {
             from: keys.originUser,
-            to: 'bit21-mmuva@poly.ac.mw',
+            to: emailAddress,
             subject: `Exam Results for ${results[0].firstname} ${results[0].lastname}`,
             html: msg
         };
@@ -913,8 +912,14 @@ app.post('/send-results/:regnumber/:email', (req, res) => {
     else {
         res.send("Did not success")
     }
+    const data = {
+        title:"Reports",
+        active: "Reports",
+        message: "Email Successfully Sent",
+        route: "reports",
+    }
 
-    res.send("Reached")
+    res.render('emailFeedback',data)
 
 
 })
