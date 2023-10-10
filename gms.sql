@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Oct 06, 2023 at 11:11 AM
+-- Generation Time: Oct 10, 2023 at 10:31 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -102,27 +102,6 @@ INSERT INTO `grades` (`id`, `regnumber`, `module_code`, `semester`, `marks`) VAL
 (14, 'MIS/23/SS/002', 'COCA121', 2, 76.00),
 (15, 'MIS/23/SS/002', 'CSOP121', 2, 99.00),
 (16, 'MIS/23/SS/002', 'CSSP121', 2, 43.00),
-(17, 'BAF/23/SS/001', 'COFA111', 1, 76.00),
-(18, 'BAF/23/SS/001', 'COCA111', 1, 56.00),
-(19, 'BAF/23/SS/001', 'COCA121', 2, 50.00),
-(20, 'BAF/23/SS/001', 'COOB111', 1, 73.00),
-(21, 'BAF/23/SS/001', 'COFA121', 2, 81.00),
-(22, 'BAF/23/SS/001', 'COFA121', 2, 76.00),
-(23, 'BAF/23/SS/001', 'COBL111', 1, 55.00),
-(24, 'BAF/23/SS/002', 'COFA111', 1, 42.00),
-(25, 'BAF/23/SS/002', 'COCA111', 1, 55.00),
-(26, 'BAF/23/SS/002', 'COCA121', 2, 50.00),
-(27, 'BAF/23/SS/002', 'COOB111', 1, 65.00),
-(28, 'BAF/23/SS/002', 'COFA121', 2, 70.00),
-(29, 'BAF/23/SS/002', 'COFA121', 2, 75.00),
-(30, 'BAF/23/SS/002', 'COBL111', 1, 51.00),
-(31, 'BAF/23/SS/003', 'COFA111', 1, 65.00),
-(32, 'BAF/23/SS/003', 'COCA111', 1, 80.00),
-(33, 'BAF/23/SS/003', 'COCA121', 2, 54.00),
-(34, 'BAF/23/SS/003', 'COOB111', 1, 90.00),
-(35, 'BAF/23/SS/003', 'COFA121', 2, 70.00),
-(36, 'BAF/23/SS/003', 'COFA121', 2, 52.00),
-(37, 'BAF/23/SS/003', 'COBL111', 1, 80.00),
 (38, 'BME/23/SS/001', 'ENCA111', 1, 55.00),
 (39, 'BME/23/SS/001', 'ENCH111', 1, 51.00),
 (40, 'BME/23/SS/001', 'ENED111', 1, 59.00),
@@ -146,7 +125,28 @@ INSERT INTO `grades` (`id`, `regnumber`, `module_code`, `semester`, `marks`) VAL
 (58, 'BME/23/SS/003', 'ENPH121', 2, 50.00),
 (59, 'BME/23/SS/003', 'ENMS121', 2, 61.00),
 (60, 'BME/23/SS/003', 'ENTR121', 2, 42.00),
-(61, 'BME/23/SS/003', 'ENWOP121', 2, 40.00);
+(61, 'BME/23/SS/003', 'ENWOP121', 2, 40.00),
+(62, 'BAF/23/SS/001', 'COFA111', 1, 76.00),
+(63, 'BAF/23/SS/001', 'COCA111', 1, 56.00),
+(64, 'BAF/23/SS/001', 'COCA121', 2, 50.00),
+(65, 'BAF/23/SS/001', 'COOB111', 1, 73.00),
+(66, 'BAF/23/SS/001', 'COFA121', 2, 81.00),
+(67, 'BAF/23/SS/001', 'COFA121', 2, 76.00),
+(68, 'BAF/23/SS/001', 'COBL111', 1, 55.00),
+(69, 'BAF/23/SS/002', 'COFA111', 1, 42.00),
+(70, 'BAF/23/SS/002', 'COCA111', 1, 55.00),
+(71, 'BAF/23/SS/002', 'COCA121', 2, 50.00),
+(72, 'BAF/23/SS/002', 'COOB111', 1, 65.00),
+(73, 'BAF/23/SS/002', 'COFA121', 2, 70.00),
+(74, 'BAF/23/SS/002', 'COFA121', 2, 75.00),
+(75, 'BAF/23/SS/002', 'COBL111', 1, 51.00),
+(76, 'BAF/23/SS/003', 'COFA111', 1, 65.00),
+(77, 'BAF/23/SS/003', 'COCA111', 1, 80.00),
+(78, 'BAF/23/SS/003', 'COCA121', 2, 54.00),
+(79, 'BAF/23/SS/003', 'COOB111', 1, 90.00),
+(80, 'BAF/23/SS/003', 'COFA121', 2, 70.00),
+(81, 'BAF/23/SS/003', 'COFA121', 2, 52.00),
+(82, 'BAF/23/SS/003', 'COBL111', 1, 80.00);
 
 -- --------------------------------------------------------
 
@@ -170,7 +170,9 @@ CREATE TABLE `lecturers` (
 INSERT INTO `lecturers` (`id`, `firstname`, `lastname`, `gender`, `age`, `department`) VALUES
 (18, 'D', 'Mkavea', NULL, NULL, 1),
 (19, 'ron', 'ron3', NULL, NULL, 3),
-(20, 'Madalitso', 'Mkavea', NULL, NULL, 2);
+(20, 'Madalitso', 'Mkavea', NULL, NULL, 2),
+(21, 'Martin', 'Kabvalo', NULL, NULL, 1),
+(22, 'Naomi', 'Banda', NULL, NULL, 2);
 
 -- --------------------------------------------------------
 
@@ -194,7 +196,11 @@ INSERT INTO `lecturer_module` (`id`, `lecturer_id`, `module_code`) VALUES
 (3, 19, 'COBL111'),
 (4, 19, 'COFA111'),
 (5, 20, 'ENCH111'),
-(6, 20, 'ENEM111');
+(6, 20, 'ENEM111'),
+(7, 21, 'COFA121'),
+(8, 21, 'CSDS111'),
+(9, 22, 'ENCH111'),
+(10, 22, 'ENEM111');
 
 -- --------------------------------------------------------
 
@@ -278,24 +284,29 @@ CREATE TABLE `students` (
   `nk_full_name` varchar(255) DEFAULT NULL,
   `nk_relationship` varchar(255) DEFAULT NULL,
   `nk_phone_number` varchar(15) DEFAULT NULL,
-  `nk_email` varchar(255) DEFAULT NULL
+  `nk_email` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT '12345678'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `students`
 --
 
-INSERT INTO `students` (`regnumber`, `firstname`, `lastname`, `gender`, `age`, `program_id`, `c_year`, `c_semester`, `nk_full_name`, `nk_relationship`, `nk_phone_number`, `nk_email`) VALUES
-('BAF/23/SS/001', 'ron', 'Mha', NULL, NULL, 3, NULL, NULL, NULL, NULL, NULL, NULL),
-('BAF/23/SS/002', 'Zon', 'lls', NULL, NULL, 3, NULL, NULL, NULL, NULL, NULL, NULL),
-('BAF/23/SS/003', 'zondiwe', 'mha', NULL, NULL, 3, NULL, NULL, NULL, NULL, NULL, NULL),
-('BAF/23/SS/004', 'aubrey', 'ron', NULL, NULL, 3, NULL, NULL, NULL, NULL, NULL, NULL),
-('BME/23/SS/001', 'John ', 'D', 'M', NULL, 6, NULL, NULL, 'snsn', 'Father', '099', 'bit-mmuva@poly.ac.mw'),
-('BME/23/SS/002', 'esmie', 'luh', NULL, NULL, 6, NULL, NULL, NULL, NULL, NULL, NULL),
-('BME/23/SS/003', 'ken', 'renda', NULL, NULL, 6, NULL, NULL, NULL, NULL, NULL, NULL),
-('MIS/23/SS/001', 'Madalitso', 'Mkavea', 'M', NULL, 1, NULL, NULL, 'Elton', 'Father', '0988', 'dad@mail.com'),
-('MIS/23/SS/002', 'olivia', 'mka', NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-('MIS/23/SS/003', 'Martin', 'K', NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `students` (`regnumber`, `firstname`, `lastname`, `gender`, `age`, `program_id`, `c_year`, `c_semester`, `nk_full_name`, `nk_relationship`, `nk_phone_number`, `nk_email`, `password`) VALUES
+('BAF/23/SS/001', 'maka', 'daire', 'M', NULL, 3, NULL, NULL, 'Jacob', 'Father', '099875854', 'bit-mmuva@poly.ac.mw', '$2b$04$nowUvodDUz6r0QHwqXcHL.v33HTTecUVciQpTnGZBRThp73eDTSL6'),
+('BAF/23/SS/002', 'cha', 'kasi', NULL, NULL, 3, NULL, NULL, NULL, NULL, NULL, NULL, '$2b$04$nowUvodDUz6r0QHwqXcHL.v33HTTecUVciQpTnGZBRThp73eDTSL6'),
+('BAF/23/SS/003', 'Madalitso', 'ron', NULL, NULL, 3, NULL, NULL, NULL, NULL, NULL, NULL, '$2b$10$ZBcauoEiwZ2Y/sB1L3j50e0RYK8qxB1nAL4HRUJxNDJjt0eGh/3Se'),
+('BME/23/SS/001', 'John ', 'D', 'M', NULL, 6, NULL, NULL, 'snsn', 'Father', '099', 'bit-mmuva@poly.ac.mw', '$2b$04$nowUvodDUz6r0QHwqXcHL.v33HTTecUVciQpTnGZBRThp73eDTSL6'),
+('BME/23/SS/002', 'esmie', 'luh', NULL, NULL, 6, NULL, NULL, NULL, NULL, NULL, NULL, '$2b$04$nowUvodDUz6r0QHwqXcHL.v33HTTecUVciQpTnGZBRThp73eDTSL6'),
+('BME/23/SS/003', 'ken', 'renda', 'M', NULL, 6, NULL, NULL, 'Esmie', 'Mother', '099999', 'esmieluphande@gmail.com', '$2b$04$nowUvodDUz6r0QHwqXcHL.v33HTTecUVciQpTnGZBRThp73eDTSL6'),
+('BME/23/SS/004', 'mary', 'Banda', NULL, NULL, 6, NULL, NULL, NULL, NULL, NULL, NULL, '$2b$04$nowUvodDUz6r0QHwqXcHL.v33HTTecUVciQpTnGZBRThp73eDTSL6'),
+('BME/23/SS/005', 'D', 'Mha', NULL, NULL, 6, NULL, NULL, NULL, NULL, NULL, NULL, '$2b$04$nowUvodDUz6r0QHwqXcHL.v33HTTecUVciQpTnGZBRThp73eDTSL6'),
+('BME/23/SS/007', 'D', 'Mha', NULL, NULL, 6, NULL, NULL, NULL, NULL, NULL, NULL, '$2b$04$nowUvodDUz6r0QHwqXcHL.v33HTTecUVciQpTnGZBRThp73eDTSL6'),
+('BME/23/SS/008', 'Dan', 'Chik', 'M', NULL, 6, NULL, NULL, 'Sauda R', 'Mother', '09888282', 'sauda@mail.com', '$2b$10$hSAONMUbsfy.rqH6OcWnbup6Q1ZEvFu/1LFZSkkP2ew.cw82.C9hq'),
+('MIS/23/SS/001', 'Madalitso', 'Mkavea', 'M', NULL, 1, NULL, NULL, 'Elton', 'Father', '0988', 'zondiwemhango214@gmail.com', '$2b$04$nowUvodDUz6r0QHwqXcHL.v33HTTecUVciQpTnGZBRThp73eDTSL6'),
+('MIS/23/SS/002', 'olivia', 'mka', NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, '$2b$04$nowUvodDUz6r0QHwqXcHL.v33HTTecUVciQpTnGZBRThp73eDTSL6'),
+('MIS/23/SS/003', 'Martin', 'K', NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, '$2b$04$nowUvodDUz6r0QHwqXcHL.v33HTTecUVciQpTnGZBRThp73eDTSL6'),
+('MIS/23/SS/005', 'wiz', 'banda', 'M', NULL, 1, NULL, NULL, 'jackson b', 'Father', '0888569207', 'zondiwemhango214@gmail.com', '$2b$10$VFA9xMLxIO6K/J3V2yc7ceSD2Ktpj4BEiH1HPmCTRi1YgHuWKOjKa');
 
 --
 -- Indexes for dumped tables
@@ -382,19 +393,19 @@ ALTER TABLE `departments`
 -- AUTO_INCREMENT for table `grades`
 --
 ALTER TABLE `grades`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
 
 --
 -- AUTO_INCREMENT for table `lecturers`
 --
 ALTER TABLE `lecturers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `lecturer_module`
 --
 ALTER TABLE `lecturer_module`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `programs`
